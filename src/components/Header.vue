@@ -60,12 +60,27 @@ const closeMenu = () => {
   menuOpen.value = false
 }
 
+let rafId = null
+let ticking = false
+
+const optimizedHandleScroll = () => {
+  if (ticking) return
+  ticking = true
+  
+  rafId = requestAnimationFrame(() => {
+    handleScroll()
+    ticking = false
+  })
+}
+
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
+  window.addEventListener('scroll', optimizedHandleScroll, { passive: true })
+  optimizedHandleScroll() // Проверяем начальное состояние
 })
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
+  window.removeEventListener('scroll', optimizedHandleScroll)
+  if (rafId) cancelAnimationFrame(rafId)
 })
 </script>
 

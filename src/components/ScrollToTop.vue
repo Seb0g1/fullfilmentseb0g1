@@ -14,9 +14,17 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { ArrowUp } from 'lucide-vue-next'
 
 const isVisible = ref(false)
+let rafId = null
+let ticking = false
 
 const handleScroll = () => {
-  isVisible.value = window.scrollY > 300
+  if (ticking) return
+  ticking = true
+  
+  rafId = requestAnimationFrame(() => {
+    isVisible.value = window.scrollY > 300
+    ticking = false
+  })
 }
 
 const scrollToTop = () => {
@@ -27,12 +35,13 @@ const scrollToTop = () => {
 }
 
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
-  handleScroll()
+  window.addEventListener('scroll', handleScroll, { passive: true })
+  handleScroll() // Проверяем начальное состояние
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  if (rafId) cancelAnimationFrame(rafId)
 })
 </script>
 

@@ -257,16 +257,22 @@ const animate = (currentTime) => {
   renderer.render(scene, camera)
 }
 
+let resizeTimeout
 const onWindowResize = () => {
   if (!camera || !renderer) return
   
-  camera.aspect = window.innerWidth / window.innerHeight
-  camera.updateProjectionMatrix()
-  renderer.setSize(window.innerWidth, window.innerHeight)
+  // Дебаунсинг для resize
+  clearTimeout(resizeTimeout)
+  resizeTimeout = setTimeout(() => {
+    camera.aspect = window.innerWidth / window.innerHeight
+    camera.updateProjectionMatrix()
+    renderer.setSize(window.innerWidth, window.innerHeight)
+  }, 150)
 }
 
 const cleanup = () => {
   window.removeEventListener('resize', onWindowResize)
+  clearTimeout(resizeTimeout)
   
   if (animationId) {
     cancelAnimationFrame(animationId)
@@ -300,6 +306,7 @@ const cleanup = () => {
 
 onMounted(() => {
   init3D()
+  window.addEventListener('resize', onWindowResize, { passive: true })
 })
 
 onBeforeUnmount(() => {

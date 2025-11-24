@@ -75,13 +75,16 @@ body {
       rgba(203, 17, 171, 0.03) 2px,
       rgba(203, 17, 171, 0.03) 4px
     );
-  background-attachment: fixed;
+  /* background-attachment: fixed убран для лучшей производительности */
   color: var(--white);
   line-height: 1.6;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   position: relative;
+  /* Оптимизация рендеринга */
+  transform: translateZ(0);
+  will-change: scroll-position;
 }
 
 body::before {
