@@ -83,6 +83,10 @@ fi
 echo ""
 echo -e "${BLUE}[3/7] Установка зависимостей frontend...${NC}"
 npm install
+if [ $? -ne 0 ]; then
+    echo -e "${RED}❌ Ошибка установки зависимостей${NC}"
+    exit 1
+fi
 echo -e "${GREEN}✅ Зависимости frontend установлены${NC}"
 
 # Установка зависимостей backend
