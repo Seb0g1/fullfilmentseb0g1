@@ -78,7 +78,7 @@
 │   ├── .env                 # Ваши токены (создается автоматически)
 │   └── node_modules/
 ├── nginx-sakoo.conf         # Конфигурация nginx
-└── ecosystem.config.js      # PM2 конфигурация
+└── ecosystem.config.cjs     # PM2 конфигурация
 
 /etc/nginx/sites-available/sakoo.ru  # Активированная конфигурация
 ```

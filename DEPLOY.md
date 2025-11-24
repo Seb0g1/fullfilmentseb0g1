@@ -93,7 +93,7 @@ npm install -g pm2
 
 # Запустите через PM2
 cd /var/www/sakoo.ru
-pm2 start ecosystem.config.js
+pm2 start ecosystem.config.cjs
 
 # Сохраните конфигурацию для автозапуска
 pm2 save
@@ -248,7 +248,7 @@ sudo tail -f /var/log/nginx/sakoo.ru.error.log
 │   ├── .env                 # Конфигурация (не коммитится!)
 │   └── node_modules/
 ├── nginx-sakoo.conf         # Конфигурация nginx
-├── ecosystem.config.js      # PM2 конфигурация
+├── ecosystem.config.cjs     # PM2 конфигурация
 ├── start.sh                 # Скрипт запуска
 └── deploy.sh                # Скрипт деплоя
 ```

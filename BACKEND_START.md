@@ -79,7 +79,7 @@ NODE_ENV=development
 Используйте PM2 или systemd (см. `DEPLOY.md`):
 
 ```bash
-pm2 start ecosystem.config.js
+pm2 start ecosystem.config.cjs
 ```
 
 ## Устранение проблем

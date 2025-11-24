@@ -46,7 +46,7 @@ sudo systemctl reload nginx
 npm install -g pm2
 
 # Запустите
-pm2 start ecosystem.config.js
+pm2 start ecosystem.config.cjs
 
 # Автозапуск при перезагрузке
 pm2 save
@@ -71,7 +71,7 @@ PORT=3001
 - `start.bat` / `start.sh` - запуск на локальной машине/сервере
 - `deploy.sh` - скрипт деплоя
 - `nginx-sakoo.conf` - конфигурация nginx для домена sakoo.ru
-- `ecosystem.config.js` - конфигурация PM2 для автозапуска
+- `ecosystem.config.cjs` - конфигурация PM2 для автозапуска
 - `DEPLOY.md` - подробная инструкция по деплою
 
 ## Проверка работы

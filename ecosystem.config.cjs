@@ -1,5 +1,5 @@
 // PM2 конфигурация для автозапуска и управления процессами
-// Использование: pm2 start ecosystem.config.js
+// Использование: pm2 start ecosystem.config.cjs
 // Установка PM2: npm install -g pm2
 
 module.exports = {

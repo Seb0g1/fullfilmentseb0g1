@@ -92,5 +92,5 @@ echo "4. Запустите backend сервер (см. start.sh или испо
 echo ""
 echo "Или используйте:"
 echo "  ./start.sh  - для запуска на текущем сервере"
-echo "  pm2 start ecosystem.config.js  - для запуска через PM2"
+echo "  pm2 start ecosystem.config.cjs  - для запуска через PM2"
 

@@ -243,20 +243,28 @@ echo ""
 echo -e "${BLUE}[9/9] Запуск backend сервера...${NC}"
 cd "${PROJECT_DIR}"
 
+# ВАЖНО: Удаляем старый файл ecosystem.config.js если существует
+# Это обязательно, так как он конфликтует с ES modules
 if [ -f "ecosystem.config.js" ]; then
-    # Останавливаем старый процесс, если существует
-    pm2 delete fulfillment-backend 2>/dev/null || true
-    
-    # Запускаем через PM2
-    pm2 start ecosystem.config.js
+    echo -e "${YELLOW}⚠️  Найден старый ecosystem.config.js, удаляю...${NC}"
+    rm -f ecosystem.config.js
+    echo -e "${GREEN}✅ Старый файл удален${NC}"
+fi
+
+# Останавливаем старый процесс, если существует
+pm2 delete fulfillment-backend 2>/dev/null || true
+
+if [ -f "ecosystem.config.cjs" ]; then
+    # Запускаем через PM2 с новым файлом
+    echo -e "${BLUE}Запускаю backend через ecosystem.config.cjs...${NC}"
+    pm2 start ecosystem.config.cjs
     pm2 save
     
     echo -e "${GREEN}✅ Backend запущен через PM2${NC}"
 else
-    echo -e "${YELLOW}⚠️  Файл ecosystem.config.js не найден${NC}"
+    echo -e "${YELLOW}⚠️  Файл ecosystem.config.cjs не найден${NC}"
     echo "Запускаю backend напрямую через PM2..."
     
-    pm2 delete fulfillment-backend 2>/dev/null || true
     pm2 start server/server.js --name fulfillment-backend --cwd "${PROJECT_DIR}" --env production
     pm2 save
     
