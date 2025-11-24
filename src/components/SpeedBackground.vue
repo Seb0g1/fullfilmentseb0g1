@@ -1,15 +1,15 @@
 <template>
   <div class="speed-background">
-    <!-- Улучшенные линии скорости -->
-    <div class="speed-lines" v-for="i in 7" :key="i" :style="{ animationDelay: `${i * 0.4}s`, left: `${(i - 1) * 14.28}%` }"></div>
+    <!-- Оптимизированные линии скорости (уменьшено с 7 до 5) -->
+    <div class="speed-lines" v-for="i in 5" :key="i" :style="{ animationDelay: `${i * 0.4}s`, left: `${(i - 1) * 25}%` }"></div>
     
     <!-- Волны -->
     <div class="wave wave-1"></div>
     <div class="wave wave-2"></div>
     <div class="wave wave-3"></div>
     
-    <!-- Улучшенные стрелки -->
-    <div class="speed-arrows" v-for="i in 10" :key="'arrow-' + i" :style="{ animationDelay: `${i * 0.25}s`, left: `${(i - 1) * 10}%` }">
+    <!-- Оптимизированные стрелки (уменьшено с 10 до 6) -->
+    <div class="speed-arrows" v-for="i in 6" :key="'arrow-' + i" :style="{ animationDelay: `${i * 0.3}s`, left: `${(i - 1) * 16.66}%` }">
       <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient :id="`arrowGradient-${i}`" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -19,14 +19,14 @@
           </linearGradient>
         </defs>
         <path d="M30 10L40 30L30 50L20 30L30 10Z" :fill="`url(#arrowGradient-${i})`" opacity="0.4">
-          <animate attributeName="opacity" values="0.2;0.5;0.2" dur="2.5s" :begin="`${i * 0.25}s`" repeatCount="indefinite"/>
-          <animateTransform attributeName="transform" type="rotate" values="0 30 30;360 30 30" dur="8s" :begin="`${i * 0.25}s`" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.2;0.5;0.2" dur="2.5s" :begin="`${i * 0.3}s`" repeatCount="indefinite"/>
+          <animateTransform attributeName="transform" type="rotate" values="0 30 30;360 30 30" dur="8s" :begin="`${i * 0.3}s`" repeatCount="indefinite"/>
         </path>
       </svg>
     </div>
     
-    <!-- Улучшенные точки -->
-    <div class="speed-dots" v-for="i in 15" :key="'dot-' + i" :style="{ animationDelay: `${i * 0.15}s`, left: `${(i - 1) * 6.66}%` }"></div>
+    <!-- Оптимизированные точки (уменьшено с 15 до 10) -->
+    <div class="speed-dots" v-for="i in 10" :key="'dot-' + i" :style="{ animationDelay: `${i * 0.2}s`, left: `${(i - 1) * 10}%` }"></div>
     
     <!-- Плавающие градиентные круги -->
     <div class="floating-orb orb-1"></div>

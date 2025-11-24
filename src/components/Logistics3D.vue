@@ -318,6 +318,9 @@ onBeforeUnmount(() => {
   z-index: 0;
   opacity: 0.1;
   mix-blend-mode: normal;
+  will-change: contents; /* Оптимизация для 3D рендеринга */
+  contain: strict; /* Изоляция для лучшей производительности */
+  transform: translateZ(0); /* GPU ускорение */
 }
 
 .logistics-3d canvas {
@@ -326,6 +329,7 @@ onBeforeUnmount(() => {
   height: 100%;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
+  will-change: contents;
 }
 
 @media (max-width: 968px) {

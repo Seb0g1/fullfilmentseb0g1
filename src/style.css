@@ -157,13 +157,15 @@ body::after {
 /* Анимации появления */
 .fade-in-section {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translate3d(0, 30px, 0); /* GPU ускорение */
   transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  will-change: opacity, transform; /* Оптимизация для браузера */
 }
 
 .fade-in-section.animate-in {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate3d(0, 0, 0);
+  will-change: auto; /* Убираем после анимации */
 }
 
 /* Кнопки */
@@ -264,6 +266,8 @@ h3 {
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  will-change: background, border-color, box-shadow; /* Оптимизация для hover */
+  contain: layout style paint; /* Изоляция для лучшей производительности */
 }
 
 .glass:hover {

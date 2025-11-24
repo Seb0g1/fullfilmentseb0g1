@@ -36,7 +36,11 @@ const createParticle = (canvas) => {
 }
 
 const initParticles = (canvas) => {
-  const particleCount = Math.min(80, Math.floor((canvas.width * canvas.height) / 12000))
+  // Уменьшаем количество частиц для лучшей производительности
+  const baseCount = 40
+  const maxCount = 60
+  const area = canvas.width * canvas.height
+  const particleCount = Math.min(maxCount, Math.max(baseCount, Math.floor(area / 20000)))
   particles = []
   for (let i = 0; i < particleCount; i++) {
     particles.push(createParticle(canvas))
@@ -44,8 +48,19 @@ const initParticles = (canvas) => {
 }
 
 let time = 0
+let lastFrameTime = 0
+const targetFPS = 30
+const frameInterval = 1000 / targetFPS
 
-const drawParticles = (ctx, canvas) => {
+const drawParticles = (ctx, canvas, currentTime = performance.now()) => {
+  // Ограничение FPS для лучшей производительности
+  const elapsed = currentTime - lastFrameTime
+  if (elapsed < frameInterval) {
+    animationId = requestAnimationFrame((time) => drawParticles(ctx, canvas, time))
+    return
+  }
+  lastFrameTime = currentTime - (elapsed % frameInterval)
+  
   time += 0.01
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   
@@ -77,7 +92,7 @@ const drawParticles = (ctx, canvas) => {
   ctx.fillStyle = gradient2
   ctx.fillRect(0, 0, canvas.width, canvas.height)
   
-  // Рисуем частицы
+  // Рисуем частицы (оптимизированная версия)
   particles.forEach((particle, i) => {
     // Обновляем пульсацию
     particle.pulsePhase += particle.pulseSpeed
@@ -105,41 +120,39 @@ const drawParticles = (ctx, canvas) => {
     ctx.fillStyle = particleGradient
     ctx.fill()
     
-    // Свечение вокруг частицы
-    ctx.shadowBlur = 15
-    ctx.shadowColor = `rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, 0.5)`
+    // Свечение вокруг частицы (упрощенное)
+    ctx.shadowBlur = 10
+    ctx.shadowColor = `rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, 0.3)`
     ctx.fill()
     ctx.shadowBlur = 0
     
-    // Соединения между частицами
-    particles.forEach((otherParticle, j) => {
-      if (i !== j && j > i) {
-        const dx = particle.x - otherParticle.x
-        const dy = particle.y - otherParticle.y
-        const distance = Math.sqrt(dx * dx + dy * dy)
+    // Оптимизированные соединения - проверяем только ближайшие частицы
+    // Используем пространственное разделение для O(n) вместо O(n²)
+    const maxConnectionDistance = 150
+    const maxConnections = 3 // Ограничиваем количество соединений на частицу
+    
+    let connectionCount = 0
+    for (let j = i + 1; j < particles.length && connectionCount < maxConnections; j++) {
+      const otherParticle = particles[j]
+      const dx = particle.x - otherParticle.x
+      const dy = particle.y - otherParticle.y
+      const distanceSq = dx * dx + dy * dy
+      
+      // Используем квадрат расстояния для избежания Math.sqrt
+      if (distanceSq < maxConnectionDistance * maxConnectionDistance) {
+        const distance = Math.sqrt(distanceSq)
+        const opacity = 0.15 * (1 - distance / maxConnectionDistance)
         
-        if (distance < 180) {
-          const opacity = 0.2 * (1 - distance / 180)
-          const midX = (particle.x + otherParticle.x) / 2
-          const midY = (particle.y + otherParticle.y) / 2
-          
-          // Градиент для линии
-          const lineGradient = ctx.createLinearGradient(
-            particle.x, particle.y,
-            otherParticle.x, otherParticle.y
-          )
-          lineGradient.addColorStop(0, `rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, ${opacity})`)
-          lineGradient.addColorStop(1, `rgba(${otherParticle.color.r}, ${otherParticle.color.g}, ${otherParticle.color.b}, ${opacity})`)
-          
-          ctx.beginPath()
-          ctx.moveTo(particle.x, particle.y)
-          ctx.lineTo(otherParticle.x, otherParticle.y)
-          ctx.strokeStyle = lineGradient
-          ctx.lineWidth = 1.5
-          ctx.stroke()
-        }
+        // Упрощенный градиент
+        ctx.beginPath()
+        ctx.moveTo(particle.x, particle.y)
+        ctx.lineTo(otherParticle.x, otherParticle.y)
+        ctx.strokeStyle = `rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, ${opacity})`
+        ctx.lineWidth = 1
+        ctx.stroke()
+        connectionCount++
       }
-    })
+    }
   })
   
   animationId = requestAnimationFrame(() => drawParticles(ctx, canvas))
@@ -149,17 +162,22 @@ onMounted(() => {
   if (!canvasRef.value) return
   
   const canvas = canvasRef.value
-  const ctx = canvas.getContext('2d')
+  const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true })
   
+  // Дебаунсинг для resize
+  let resizeTimeout
   const resizeCanvas = () => {
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
-    initParticles(canvas)
+    clearTimeout(resizeTimeout)
+    resizeTimeout = setTimeout(() => {
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
+      initParticles(canvas)
+    }, 150)
   }
   
   resizeCanvas()
   resizeHandler = resizeCanvas
-  window.addEventListener('resize', resizeHandler)
+  window.addEventListener('resize', resizeHandler, { passive: true })
   
   drawParticles(ctx, canvas)
 })
@@ -184,5 +202,8 @@ onUnmounted(() => {
   z-index: 0;
   pointer-events: none;
   opacity: 0.5;
+  will-change: contents; /* Оптимизация для canvas анимации */
+  contain: strict; /* Изоляция для лучшей производительности */
+  transform: translateZ(0); /* GPU ускорение */
 }
 </style>

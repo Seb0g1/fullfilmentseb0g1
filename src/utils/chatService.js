@@ -36,10 +36,17 @@ export async function sendChatMessage(message) {
       }),
     })
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
     const data = await response.json()
     return data.success || false
   } catch (error) {
-    console.error('Error sending chat message:', error)
+    // Не логируем ошибку подключения, чтобы не засорять консоль
+    if (!error.message.includes('Failed to fetch') && !error.message.includes('ERR_CONNECTION_REFUSED')) {
+      console.error('Error sending chat message:', error)
+    }
     return false
   }
 }
@@ -52,6 +59,11 @@ export async function getChatMessages() {
   
   try {
     const response = await fetch(`${API_URL}/api/chat/messages?userId=${user}`)
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
     const data = await response.json()
     
     if (data.success && data.messages) {
@@ -64,6 +76,11 @@ export async function getChatMessages() {
     
     return []
   } catch (error) {
+    // Не логируем ошибку, если это просто недоступность сервера
+    if (error.message.includes('Failed to fetch') || error.message.includes('ERR_CONNECTION_REFUSED')) {
+      // Сервер недоступен - это нормально при разработке
+      return []
+    }
     console.error('Error getting chat messages:', error)
     return []
   }
@@ -88,10 +105,17 @@ export async function saveUserData(name, phone) {
       }),
     })
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
     const data = await response.json()
     return data.success || false
   } catch (error) {
-    console.error('Error saving user data:', error)
+    // Не логируем ошибку подключения, чтобы не засорять консоль
+    if (!error.message.includes('Failed to fetch') && !error.message.includes('ERR_CONNECTION_REFUSED')) {
+      console.error('Error saving user data:', error)
+    }
     return false
   }
 }
